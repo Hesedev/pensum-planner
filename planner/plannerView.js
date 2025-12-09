@@ -220,7 +220,7 @@ function renderPlannerOutput(plan, materiasDB) {
                 Descargar PDF
             </button>
         </div>
-        <div id="plannerPlanContainer" style="max-width: 800px; margin: auto;">
+        <div id="plannerPlanContainer">
     `;
 
     plan.forEach((ciclo, idx) => {
@@ -246,15 +246,15 @@ function renderPlannerOutput(plan, materiasDB) {
             }
 
             return `
-                            <li class="list-group-item">
-                                <strong>${m.codigo} — ${m.nombre}</strong><br>
-                                <small class="text-muted">
-                                    Créditos: <strong>${m.creditos}</strong><br>
-                                    Pre-Req.: <strong>${prereq}</strong>, Co-Req.: <strong>${coreq}</strong><br>
-                                    ${reglas == "—" ? "" : `Regla: <strong>${reglas}</strong>`}
-                                </small>
-                            </li>
-                        `;
+                <li class="list-group-item">
+                    <strong>${m.codigo} — ${m.nombre}</strong><br>
+                    <small class="text-muted">
+                        Créditos: <strong>${m.creditos}</strong><br>
+                        Pre-Req.: <strong>${prereq}</strong>, Co-Req.: <strong>${coreq}</strong><br>
+                        ${reglas == "—" ? "" : `Regla: <strong>${reglas}</strong>`}
+                    </small>
+                </li>
+            `;
         }).join("")}
             </ul>
         </div>`;

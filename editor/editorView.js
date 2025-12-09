@@ -104,24 +104,24 @@ function renderEditorMain(p) {
       <input id="nombrePensum" class="form-control mb-2" value="${esc(p.nombre)}" placeholder="Nombre del pensum">
 
       <div class="d-flex gap-2">
-        <button id="btnAddCycle" class="btn btn-primary btn-sm">+ Agregar ciclo</button>
+        <button id="btnAddCycle" class="btn btn-warning btn-sm">+ Agregar ciclo</button>
         <button id="btnAddElectiva" class="btn btn-outline-secondary btn-sm">+ Agregar electiva</button>
         <button id="btnDuplicatePensum" class="btn btn-outline-info btn-sm">Duplicar pensum</button>
       </div>
     </div>
-
+    <hr>
     <ul class="nav nav-tabs mb-3" id="editorTabs">
       <li class="nav-item">
-        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tabResumen">Resumen</button>
+        <button class="nav-link text-dark active" data-bs-toggle="tab" data-bs-target="#tabResumen">Resumen</button>
       </li>
       <li class="nav-item">
-        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabCiclos">Ciclos</button>
+        <button class="nav-link text-dark" data-bs-toggle="tab" data-bs-target="#tabCiclos">Ciclos</button>
       </li>
       <li class="nav-item">
-        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabElectivas">Electivas</button>
+        <button class="nav-link text-dark" data-bs-toggle="tab" data-bs-target="#tabElectivas">Electivas</button>
       </li>
       <li class="nav-item">
-        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabImport">Import/Export</button>
+        <button class="nav-link text-dark" data-bs-toggle="tab" data-bs-target="#tabImport">Import/Export</button>
       </li>
     </ul>
 
@@ -306,7 +306,7 @@ function renderImportExport() {
    =========================================== */
 function renderManagePensumsModal() {
     const list = state.pensums.map(p => `
-    <li class="list-group-item d-flex justify-content-between align-items-center">
+    <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap gap-2">
       <div>
         <strong>${esc(p.nombre)}</strong>
         <div class="text-muted small">Ciclos: ${p.ciclos.length}, Electivas: ${p.electivas?.length || 0}</div>
@@ -331,7 +331,7 @@ function renderManagePensumsModal() {
           <div class="modal-body">
             <div class="d-flex gap-2 mb-3">
               <input id="newPensumNameModal" class="form-control" placeholder="Nombre nuevo pensum">
-              <button id="btnCreatePensumModal" class="btn btn-primary">Crear</button>
+              <button id="btnCreatePensumModal" class="btn btn-success">Crear</button>
             </div>
             <ul class="list-group">${list}</ul>
           </div>
