@@ -26,7 +26,7 @@ Este proyecto fue desarrollado y está **especialmente optimizado** para la estr
 
 ### Compatibilidad
 
-El sistema puede funcionar con cualquier plan de estudios (pensum) que siga un formato de ciclos (cuatrimestres/trimestres) y que pueda ser modelado en la estructura JSON interna del proyecto.
+El sistema puede funcionar con cualquier plan de estudios (pensum) que siga un formato cuatrimestral de ciclos y que pueda ser modelado en la estructura JSON interna del proyecto.
 
 ---
 
