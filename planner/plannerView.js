@@ -264,25 +264,39 @@ function renderPlannerOutput(plan, materiasDB) {
     return html;
 }
 
-
-
 // EXPORTAR A PDF
 document.addEventListener("click", async e => {
     if (e.target.id !== "plannerPDF") return;
 
-    const element = document.getElementById("plannerPlanContainer");
-    if (!element) return alert("No hay plan para exportar.");
-
-    const canvas = await html2canvas(element, { scale: 2 });
-    const imgData = canvas.toDataURL("image/png");
+    const container = document.getElementById("plannerPlanContainer");
+    if (!container) return alert("No hay plan para exportar.");
 
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF("p", "mm", "a4");
-
     const pageWidth = pdf.internal.pageSize.getWidth();
-    const imgWidth = pageWidth - 20;
-    const imgHeight = canvas.height * imgWidth / canvas.width;
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const margin = 10;
+    const contentWidth = pageWidth - 2 * margin;
 
-    pdf.addImage(imgData, "PNG", 10, 10, imgWidth, imgHeight);
+    let cursorY = margin;
+
+    const cards = container.querySelectorAll(".card");
+
+    for (const card of cards) {
+        const canvas = await html2canvas(card, { scale: 1.5, useCORS: true });
+        const imgData = canvas.toDataURL("image/jpeg", 0.8);
+        const imgHeight = (canvas.height * contentWidth) / canvas.width;
+
+        // Si la card no cabe en la página, crear nueva página
+        if (cursorY + imgHeight > pageHeight - margin) {
+            pdf.addPage();
+            cursorY = margin;
+        }
+
+        pdf.addImage(imgData, "JPEG", margin, cursorY, contentWidth, imgHeight);
+        cursorY += imgHeight + 5; // espacio entre cards
+    }
+
     pdf.save("plan.pdf");
 });
+
