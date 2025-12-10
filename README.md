@@ -1,7 +1,5 @@
 # 🎓 Pensum Planner
 
-![Logo del Proyecto] 
-
 **Pensum Planner** es una herramienta de planificación académica inteligente diseñada para ayudar a los estudiantes universitarios a optimizar su trayectoria de estudio. El sistema permite al estudiante **organizar de forma inteligente** su carrera, generando automáticamente el plan de materias más eficiente para completarla en el menor tiempo posible, respetando estrictamente todas las dependencias académicas.
 
 ---
@@ -32,14 +30,24 @@ El sistema puede funcionar con cualquier plan de estudios (pensum) que siga un f
 
 ## 🛠️ Cómo Empezar
 
-Este es un proyecto **Vanilla JavaScript** y no requiere de instalaciones complejas.
+Pensum Planner es una aplicación **Vanilla JavaScript** que puede ser usada directamente desde la web o ejecutada localmente.
+
+### 1. Uso Directo (Recomendado para Usuarios)
+
+Puedes usar la herramienta sin instalar nada, directamente en tu navegador, gracias a GitHub Pages:
+
+🔗 **[Abrir Pensum Planner en vivo](https://hesedev.github.io/pensum-planner/)**
+
+### 2. Ejecución Local (Para Contribuyentes)
+
+Si deseas modificar el código o desarrollar nuevas funcionalidades:
 
 1.  **Clona el repositorio:**
     ```bash
-    git clone [https://github.com/tu-usuario/pensum-planner.git](https://github.com/tu-usuario/pensum-planner.git)
+    git clone [[https://github.com/tu-usuario/pensum-planner.git](https://github.com/tu-usuario/pensum-planner.git)]
     ```
 2.  **Ejecución:** Simplemente abre el archivo `index.html` en tu navegador.
-    > **Nota:** Para que la importación/exportación de archivos funcione localmente, se recomienda usar un servidor local simple (ej. Live Server).
+    > **Nota:** Para que las funciones de importar y exportar archivos funcionen correctamente, se recomienda usar un servidor local simple (ej. Live Server).
 
 ---
 
@@ -54,10 +62,10 @@ Este es un proyecto *open source*. Damos la bienvenida a la comunidad para:
 
 ## 🧑‍💻 Autor
 
-* **[Tu Nombre/Pseudónimo]** - [Tu Enlace de Contacto (ej: GitHub o LinkedIn)]
+* **Hesedev** - [https://github.com/Hesedev](https://github.com/Hesedev)
 
 ---
 
 ## 📜 Licencia
 
-Este proyecto está distribuido bajo la licencia [**MIT** (o la licencia que prefieras)].
+Este proyecto está distribuido bajo la licencia **MIT**.
