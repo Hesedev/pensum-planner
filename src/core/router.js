@@ -1,8 +1,8 @@
 // router.js
 import { render } from "./utils.js";
-import { homeView } from "./views/homeView.js";
-import { editorView } from "./editor/editorView.js";
-import { plannerView } from "./planner/plannerView.js";
+import { homeView } from "../views/homeView.js";
+import { editorView } from "../modules/editor/editorView.js";
+import { plannerView } from "../modules/planner/plannerView.js";
 
 // Mapa de rutas limpias
 const routes = {

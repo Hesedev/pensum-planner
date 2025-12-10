@@ -1,6 +1,6 @@
 // editor/editor.js
-import { state, saveState } from "../state.js";
-import { uid } from "../utils.js";
+import { state, saveState } from "../../core/state.js";
+import { uid } from "../../core/utils.js";
 
 /*****************************************************************
  *                 UTILIDADES INTERNAS

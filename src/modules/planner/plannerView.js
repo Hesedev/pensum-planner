@@ -1,8 +1,8 @@
 // planner/plannerView.js
-import { state } from "../state.js";
+import { state } from "../../core/state.js";
 import { getPensumById, normalizePensum } from "./planner.js";
 import { runPlanner } from "../algorithm/plannerCore.js";
-import { render } from "../utils.js"; // Asumiendo que `render` es una utilidad de DOM
+import { render } from "../../core/utils.js"; // Asumiendo que `render` es una utilidad de DOM
 
 // =================================================================
 // UTILIDADES PARA ELECTIVAS Y RENDERING

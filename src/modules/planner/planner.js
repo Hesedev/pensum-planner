@@ -1,5 +1,5 @@
 // planner/planner.js
-import { state } from "../state.js";
+import { state } from "../../core/state.js";
 
 export function getPensumById(id) {
     return state.pensums.find(p => p.id === id);
