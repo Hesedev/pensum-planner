@@ -1,0 +1,644 @@
+{
+    "id": "uasd-psicologia-clinica-000012",
+    "nombre": "Licenciatura en Psicología Mención Psicología Clínica - UASD",
+    "periodoAcademico": "Semestral",
+    "ciclos": [
+        {
+            "numero": 1,
+            "materias": [
+                {
+                    "codigo": "BIO-0140",
+                    "nombre": "BIOLOGÍA BÁSICA",
+                    "creditos": 3,
+                    "prerequisitos": [],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {}
+                },
+                {
+                    "codigo": "DOP-1000",
+                    "nombre": "ORIENTACIÓN INSTITUCIONAL",
+                    "creditos": 1,
+                    "prerequisitos": [],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {}
+                },
+                {
+                    "codigo": "FIL-0110",
+                    "nombre": "INTRODUCCIÓN A LA FILOSOFÍA",
+                    "creditos": 3,
+                    "prerequisitos": [],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {}
+                },
+                {
+                    "codigo": "LET-0110",
+                    "nombre": "LENGUA ESPAÑOLA BÁSICA I",
+                    "creditos": 3,
+                    "prerequisitos": [],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {}
+                },
+                {
+                    "codigo": "MAT-0140",
+                    "nombre": "MATEMÁTICA BÁSICA",
+                    "creditos": 4,
+                    "prerequisitos": [],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {}
+                },
+                {
+                    "codigo": "PSI-1000",
+                    "nombre": "PSICOLOGÍA GENERAL",
+                    "creditos": 5,
+                    "prerequisitos": [],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {}
+                },
+                {
+                    "codigo": "QUI-0140",
+                    "nombre": "QUÍMICA BÁSICA",
+                    "creditos": 3,
+                    "prerequisitos": [],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {}
+                }
+            ]
+        },
+        {
+            "numero": 2,
+            "materias": [
+                {
+                    "codigo": "BIO-1300",
+                    "nombre": "BASES NEUROBIOLÓGICAS DE LA CONDUCTA",
+                    "creditos": 4,
+                    "prerequisitos": [
+                        "BIO-0140",
+                        "QUI-0140"
+                    ],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {}
+                },
+                {
+                    "codigo": "EFS-0110",
+                    "nombre": "EDUCACIÓN FÍSICA",
+                    "creditos": 1,
+                    "prerequisitos": [],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {}
+                },
+                {
+                    "codigo": "EST-2250",
+                    "nombre": "ESTADÍSTICA DESCRIPTIVA PARA PSICOLOGÍA",
+                    "creditos": 3,
+                    "prerequisitos": [
+                        "MAT-0140"
+                    ],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {}
+                },
+                {
+                    "codigo": "FIS-0140",
+                    "nombre": "FÍSICA BÁSICA",
+                    "creditos": 4,
+                    "prerequisitos": [],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {}
+                },
+                {
+                    "codigo": "LET-0120",
+                    "nombre": "LENGUA ESPAÑOLA BÁSICA II",
+                    "creditos": 3,
+                    "prerequisitos": [
+                        "LET-0110"
+                    ],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {}
+                },
+                {
+                    "codigo": "PSI-1030",
+                    "nombre": "HISTORIA DE LA PSICOLOGÍA",
+                    "creditos": 3,
+                    "prerequisitos": [
+                        "FIL-0110"
+                    ],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {}
+                },
+                {
+                    "codigo": "PSI-1130",
+                    "nombre": "CONDUCTA ANIMAL",
+                    "creditos": 3,
+                    "prerequisitos": [
+                        "BIO-0140"
+                    ],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {}
+                },
+                {
+                    "codigo": "SOC-0110",
+                    "nombre": "INTRODUCCIÓN A LAS CIENCIAS SOCIALES",
+                    "creditos": 2,
+                    "prerequisitos": [],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {}
+                }
+            ]
+        },
+        {
+            "numero": 3,
+            "materias": [
+                {
+                    "codigo": "CFI-1190",
+                    "nombre": "PSICOFISIOLOGÍA",
+                    "creditos": 4,
+                    "prerequisitos": [
+                        "BIO-1300"
+                    ],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {}
+                },
+                {
+                    "codigo": "EST-2280",
+                    "nombre": "ESTADÍSTICA INFERENCIAL PARA PSICOLOGÍA",
+                    "creditos": 3,
+                    "prerequisitos": [
+                        "EST-2250"
+                    ],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {}
+                },
+                {
+                    "codigo": "HIS-0110",
+                    "nombre": "FUNDAMENTOS DE HISTORIA SOCIAL DOMINICANA",
+                    "creditos": 3,
+                    "prerequisitos": [],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {}
+                },
+                {
+                    "codigo": "HIS-1510",
+                    "nombre": "INTRODUCCIÓN A LA ANTROPOLOGÍA",
+                    "creditos": 3,
+                    "prerequisitos": [],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {}
+                },
+                {
+                    "codigo": "PSI-1040",
+                    "nombre": "PSICOLOGÍA CONTEMPORÁNEA",
+                    "creditos": 3,
+                    "prerequisitos": [
+                        "PSI-1030"
+                    ],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {}
+                },
+                {
+                    "codigo": "PSI-1160",
+                    "nombre": "ANÁLISIS DE LA CONDUCTA",
+                    "creditos": 5,
+                    "prerequisitos": [
+                        "BIO-1300"
+                    ],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {}
+                },
+                {
+                    "codigo": "PSI-2020",
+                    "nombre": "PERCEPCIÓN HUMANA",
+                    "creditos": 2,
+                    "prerequisitos": [
+                        "PSI-1000"
+                    ],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {}
+                }
+            ]
+        },
+        {
+            "numero": 4,
+            "materias": [
+                {
+                    "codigo": "FIL-1240",
+                    "nombre": "METODOLOGÍA DE LA INVESTIGACIÓN CIENTÍFICA",
+                    "creditos": 3,
+                    "prerequisitos": [
+                        "FIL-0110"
+                    ],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {}
+                },
+                {
+                    "codigo": "PSI-2030",
+                    "nombre": "MOTIVACIÓN Y EMOCIÓN",
+                    "creditos": 2,
+                    "prerequisitos": [
+                        "PSI-1000"
+                    ],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {}
+                },
+                {
+                    "codigo": "PSI-2040",
+                    "nombre": "PSICOLOGÍA DEL APRENDIZAJE",
+                    "creditos": 4,
+                    "prerequisitos": [
+                        "PSI-1000",
+                        "PSI-1160"
+                    ],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {}
+                },
+                {
+                    "codigo": "PSI-2110",
+                    "nombre": "TEORÍA DE LOS TEST",
+                    "creditos": 3,
+                    "prerequisitos": [
+                        "EST-2280"
+                    ],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {}
+                },
+                {
+                    "codigo": "PSI-2350",
+                    "nombre": "PSICOLOGÍA SOCIAL I",
+                    "creditos": 3,
+                    "prerequisitos": [
+                        "SOC-0110",
+                        "PSI-1000"
+                    ],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {}
+                },
+                {
+                    "codigo": "PSI-2470",
+                    "nombre": "PSICOPATOLOGÍA I",
+                    "creditos": 3,
+                    "prerequisitos": [
+                        "PSI-1000"
+                    ],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {}
+                },
+                {
+                    "codigo": "SOC-2180",
+                    "nombre": "REALIDAD SOCIAL DOMINICANA",
+                    "creditos": 2,
+                    "prerequisitos": [
+                        "SOC-0110"
+                    ],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {}
+                }
+            ]
+        },
+        {
+            "numero": 5,
+            "materias": [
+                {
+                    "codigo": "PSI-2050",
+                    "nombre": "PROCESOS COGNOSCITIVOS",
+                    "creditos": 4,
+                    "prerequisitos": [
+                        "PSI-1000"
+                    ],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {}
+                },
+                {
+                    "codigo": "PSI-2130",
+                    "nombre": "METODOLOGÍA DE LA INVESTIGACIÓN PSICOLÓGICA I",
+                    "creditos": 3,
+                    "prerequisitos": [
+                        "EST-2280",
+                        "FIL-1240"
+                    ],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {}
+                },
+                {
+                    "codigo": "PSI-2260",
+                    "nombre": "DESARROLLO PSICOLÓGICO",
+                    "creditos": 5,
+                    "prerequisitos": [
+                        "PSI-1000"
+                    ],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {}
+                },
+                {
+                    "codigo": "PSI-2390",
+                    "nombre": "PSICOLOGÍA DE LOS GRUPOS",
+                    "creditos": 2,
+                    "prerequisitos": [
+                        "PSI-2350"
+                    ],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {}
+                },
+                {
+                    "codigo": "PSI-2480",
+                    "nombre": "PSICOPATOLOGÍA II",
+                    "creditos": 3,
+                    "prerequisitos": [
+                        "PSI-2470"
+                    ],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {}
+                },
+                {
+                    "codigo": "PSI-3110",
+                    "nombre": "TEST DE APTITUDES",
+                    "creditos": 3,
+                    "prerequisitos": [
+                        "PSI-2110"
+                    ],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {}
+                }
+            ]
+        },
+        {
+            "numero": 6,
+            "materias": [
+                {
+                    "codigo": "PSI-2060",
+                    "nombre": "PSICOLOGÍA DE LA PERSONALIDAD",
+                    "creditos": 4,
+                    "prerequisitos": [
+                        "PSI-1000",
+                        "PSI-2470"
+                    ],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {}
+                },
+                {
+                    "codigo": "PSI-2140",
+                    "nombre": "METODOLOGÍA DE LA INVESTIGACIÓN PSICOLÓGICA II",
+                    "creditos": 3,
+                    "prerequisitos": [
+                        "PSI-2130"
+                    ],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {}
+                },
+                {
+                    "codigo": "PSI-3010",
+                    "nombre": "PSICOLOGÍA ESCOLAR",
+                    "creditos": 2,
+                    "prerequisitos": [
+                        "PSI-2040"
+                    ],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {}
+                },
+                {
+                    "codigo": "PSI-3120",
+                    "nombre": "TEST DE LA PERSONALIDAD",
+                    "creditos": 3,
+                    "prerequisitos": [
+                        "PSI-2110"
+                    ],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {}
+                },
+                {
+                    "codigo": "PSI-3300",
+                    "nombre": "PSICOLOGÍA INDUSTRIAL Y ORGANIZACIONAL",
+                    "creditos": 3,
+                    "prerequisitos": [
+                        "PSI-1000",
+                        "PSI-2390"
+                    ],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {}
+                },
+                {
+                    "codigo": "PSI-3330",
+                    "nombre": "PROBLEMAS PSICOSOCIALES DOMINICANOS",
+                    "creditos": 2,
+                    "prerequisitos": [
+                        "PSI-2350",
+                        "SOC-2180"
+                    ],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {}
+                },
+                {
+                    "codigo": "PSI-3410",
+                    "nombre": "PSICOLOGÍA CLÍNICA",
+                    "creditos": 2,
+                    "prerequisitos": [
+                        "PSI-2480"
+                    ],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {}
+                }
+            ]
+        },
+        {
+            "numero": 7,
+            "materias": [
+                {
+                    "codigo": "PSI-3130",
+                    "nombre": "MODELOS DE ENTREVISTA PSICOLÓGICA",
+                    "creditos": 3,
+                    "prerequisitos": [
+                        "PSI-3300",
+                        "PSI-3410"
+                    ],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {}
+                },
+                {
+                    "codigo": "PSI-3250",
+                    "nombre": "PSICOLOGÍA DIFERENCIAL",
+                    "creditos": 3,
+                    "prerequisitos": [
+                        "PSI-2260"
+                    ],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {}
+                },
+                {
+                    "codigo": "PSI-3420",
+                    "nombre": "PSICOTERAPIA COGNOSCITIVA",
+                    "creditos": 3,
+                    "prerequisitos": [
+                        "PSI-2050",
+                        "PSI-2060",
+                        "PSI-3410"
+                    ],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {}
+                },
+                {
+                    "codigo": "PSI-3430",
+                    "nombre": "PSICODIAGNÓSTICO ESTRUCTURADO",
+                    "creditos": 4,
+                    "prerequisitos": [
+                        "PSI-3120",
+                        "PSI-3410"
+                    ],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {}
+                },
+                {
+                    "codigo": "PSI-3440",
+                    "nombre": "TERAPIA CONDUCTUAL",
+                    "creditos": 3,
+                    "prerequisitos": [
+                        "PSI-1160",
+                        "PSI-3410"
+                    ],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {}
+                }
+            ]
+        },
+        {
+            "numero": 8,
+            "materias": [
+                {
+                    "codigo": "CFI-1480",
+                    "nombre": "PSICOFARMACOLOGÍA",
+                    "creditos": 3,
+                    "prerequisitos": [
+                        "CFI-1190",
+                        "PSI-2480"
+                    ],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {}
+                },
+                {
+                    "codigo": "PSI-4170",
+                    "nombre": "SEMINARIO DE TESIS EN PSICOLOGÍA",
+                    "creditos": 2,
+                    "prerequisitos": [
+                        "PSI-2140"
+                    ],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {}
+                },
+                {
+                    "codigo": "PSI-4410",
+                    "nombre": "PSICODIAGNÓSTICO PROYECTIVO",
+                    "creditos": 3,
+                    "prerequisitos": [
+                        "PSI-2060",
+                        "PSI-3120"
+                    ],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {}
+                },
+                {
+                    "codigo": "PSI-4420",
+                    "nombre": "PSICOTERAPIA ANALÍTICA",
+                    "creditos": 4,
+                    "prerequisitos": [
+                        "PSI-2060",
+                        "PSI-3410"
+                    ],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {}
+                },
+                {
+                    "codigo": "PSI-4440",
+                    "nombre": "PSICOLOGÍA CLÍNICA COMUNITARIA",
+                    "creditos": 2,
+                    "prerequisitos": [
+                        "PSI-3330",
+                        "PSI-2480"
+                    ],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {}
+                }
+            ]
+        },
+        {
+            "numero": 9,
+            "materias": [
+                {
+                    "codigo": "PSI-5400",
+                    "nombre": "PRÁCTICAS SUPERVISADAS",
+                    "creditos": 6,
+                    "prerequisitos": [],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {
+                        "requires_all_until": 8
+                    }
+                }
+            ]
+        },
+        {
+            "numero": 10,
+            "materias": [
+                {
+                    "codigo": "PSI-7020",
+                    "nombre": "TESIS DE GRADO O CURSO EQUIVALENTE",
+                    "creditos": 8,
+                    "prerequisitos": [],
+                    "corequisitos": [],
+                    "tipo": "normal",
+                    "reglas": {
+                        "requires_all_until": 9
+                    }
+                }
+            ]
+        }
+    ],
+    "electivas": []
+}

@@ -1,6 +1,6 @@
 // planner/plannerView.js
 import { state } from "../../core/state.js";
-import { getPensumById, normalizePensum } from "./planner.js";
+import { getPensumById, normalizePensum, PERIOD_CONFIG } from "./planner.js";
 import { runPlanner } from "../algorithm/plannerCore.js";
 import { render } from "../../core/utils.js"; // Asumiendo que `render` es una utilidad de DOM
 
@@ -70,7 +70,7 @@ function filterElectiveChecklist(e) {
 function renderMateriasChecklist(materiasPorCiclo) {
     let html = `
         <div class="d-flex justify-content-between align-items-center mb-2">
-            <h4>Materias aprobadas (Obligatorias)</h4>
+            <h4>Materias aprobadas</h4>
             <div class="form-check form-switch m-0">
                 <label class="form-check-label small" for="toggleAllMaterias">
                     Todas
@@ -106,8 +106,8 @@ function renderMateriasChecklist(materiasPorCiclo) {
                             data-cycle="${ciclo}">
                             <div class="form-check">
                                 <input class="form-check-input plannerAprobada cycle-checkbox-${ciclo}" 
-                                        type="checkbox" value="${m.codigo}" id="check-${m.codigo}"
-                                        data-master-toggle="toggle-ciclo-${ciclo}"> 
+                                            type="checkbox" value="${m.codigo}" id="check-${m.codigo}"
+                                            data-master-toggle="toggle-ciclo-${ciclo}"> 
                                 <label class="form-check-label" for="check-${m.codigo}">
                                     ${m.codigo} — ${m.nombre}
                                 </label>
@@ -199,7 +199,6 @@ function refreshElectivesCreditCounter() {
     });
 }
 
-
 // =================================================================
 // UTILIDAD PARA EL SWITCH GLOBAL
 // =================================================================
@@ -220,6 +219,20 @@ function updateGlobalToggleState() {
     const allChecked = Array.from(allMaterias).every(cb => cb.checked);
 
     allToggle.checked = allChecked;
+}
+
+// =================================================================
+// UTILIDADES PARA PERÍODOS ACADÉMICOS
+// =================================================================
+
+function getPeriodConfiguration(pensum) {
+    const period = pensum?.periodoAcademico;
+
+    // Fallback: Si no tiene periodoAcademico o es un valor inválido,
+    // usamos Cuatrimestral (o Indefinido, que tiene la misma config por defecto)
+    const normalizedPeriod = PERIOD_CONFIG[period] ? period : 'Cuatrimestral';
+
+    return PERIOD_CONFIG[normalizedPeriod];
 }
 
 // =================================================================
@@ -273,7 +286,7 @@ export function plannerView() {
 
 
 // =================================================================
-// EVENTO principal: seleccionar pensum (Modificado con agrupación)
+// EVENTO principal: seleccionar pensum (MODIFICADO para electivas condicionales)
 // =================================================================
 document.addEventListener("change", e => {
     if (e.target.id !== "plannerPensum") return;
@@ -282,8 +295,20 @@ document.addEventListener("change", e => {
     const p = getPensumById(id);
     state.currentPensum = id;
 
+    // --- Configuración del Período ---
+    const periodConfig = getPeriodConfiguration(p);
+
+    // Generar las opciones del select de Ciclo de inicio
+    const startCicloOptions = periodConfig.options.map(opt =>
+        `<option value="${opt.value}">${opt.label}</option>`
+    ).join("");
+
+    // --- Obtener y Agrupar Materias ---
     // Obtener materias obligatorias y electivas
     const { materias, electivas: allElectives } = normalizePensum(p);
+
+    // Bandera para la renderización condicional
+    const hasElectives = allElectives && allElectives.length > 0;
 
     // Materias obligatorias/normales
     const materiasOrdenadas = materias
@@ -297,26 +322,30 @@ document.addEventListener("change", e => {
         materiasPorCiclo[c].push(m);
     });
 
-    // GENERAR HTML para Electivas
-    const htmlElectivas = `
-        <div class="card mb-4 bg-light">
-            <div class="card-header">
-                <h5 class="mb-0">Gestión de Electivas</h5>
-            </div>
-            <div class="card-body">
-                <div class="row g-3">
-                    ${renderElectiveChecklist("electivasAprobadas", "Electivas Aprobadas", allElectives)}
-                    ${renderElectiveChecklist("electivasPlan", "Electivas a Incluir en el Plan", allElectives)}
+    // GENERAR HTML para Electivas (CONDICIONAL)
+    let htmlElectivas = '';
+    if (hasElectives) {
+        htmlElectivas = `
+            <hr class="my-4">
+            <div class="card mb-4 bg-light">
+                <div class="card-header">
+                    <h5 class="mb-0">Gestión de Electivas</h5>
                 </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        ${renderElectiveChecklist("electivasAprobadas", "Electivas Aprobadas", allElectives)}
+                        ${renderElectiveChecklist("electivasPlan", "Electivas Pendientes", allElectives)}
+                    </div>
 
-                <div class="mt-3 alert alert-info py-2">
-                    Total de Créditos de Electivas Aprobadas/Plan: <strong><span id="electivaCreditsCounter">0</span></strong>
+                    <div class="mt-3 alert alert-info py-2">
+                        Total de Créditos de Electivas Aprobadas/Plan: <strong><span id="electivaCreditsCounter">0</span></strong>
+                    </div>
                 </div>
             </div>
-        </div>
-    `;
+        `;
+    }
 
-    // GENERAR HTML para Materias Aprobadas Obligatorias
+    // GENERAR HTML para Materias Aprobadas Obligatorias (Sin cambios)
     const htmlMaterias = renderMateriasChecklist(materiasPorCiclo);
 
     document.getElementById("plannerStep2").innerHTML = `
@@ -335,14 +364,12 @@ document.addEventListener("change", e => {
         </div>
 
         <hr>
-        <h4>Fecha de Incio</h4>
+        <h4>Fecha de Incio del Plan</h4>
         <div class="row g-3 mb-3">
             <div class="col-6 col-md-3">
-                <label class="form-label">Ciclo de inicio del plan</label>
+                <label class="form-label">Ciclo de inicio</label>
                 <select id="startCiclo" class="form-select">
-                    <option value="1">1 (Enero–Abril)</option>
-                    <option value="2">2 (Mayo–Agosto)</option>
-                    <option value="3">3 (Septiembre–Diciembre)</option>
+                    ${startCicloOptions} 
                 </select>
             </div>
             <div class="col-6 col-md-3">
@@ -353,16 +380,14 @@ document.addEventListener("change", e => {
 
         <hr>
         ${htmlMaterias}
-        <hr class="my-4">
         ${htmlElectivas}
         <hr>
-        
         <button id="plannerRun" class="btn btn-warning btn-lg">
             Generar Plan
         </button>
     `;
 
-    // Configurar listeners (sin cambios)
+    // --- Configurar listeners CONDICIONALMENTE ---
     const approvedContainer = document.getElementById('electivasAprobadasChecklist');
     const planContainer = document.getElementById('electivasPlanChecklist');
     const checkboxListener = () => refreshElectivesCreditCounter();
@@ -375,9 +400,11 @@ document.addEventListener("change", e => {
 
     document.getElementById('materiasObligatoriasSearch')?.addEventListener('keyup', filterMateriasObligatorias);
 
-    refreshElectivesCreditCounter();
+    // Llamar a refreshElectivesCreditCounter solo si se renderizó la sección de electivas
+    if (hasElectives) {
+        refreshElectivesCreditCounter();
+    }
 });
-
 
 // ELIMINACIÓN DE LÓGICA OBSOLETA: El select all/unselect all se maneja con el switch en el 'change' listener.
 document.addEventListener("click", e => {
@@ -459,6 +486,7 @@ document.addEventListener("click", e => {
         .map(c => c.value);
 
     // Obtener electivas APROBADAS (de los checkboxes)
+    // Se usa el operador de encadenamiento opcional (?.) para manejar el caso donde no hay electivas
     const approvedElectiveCodes = Array.from(document.getElementById("electivasAprobadasChecklist")?.querySelectorAll('input[type="checkbox"]:checked') || []).map(cb => cb.value);
 
     // La lista final de aprobadas
@@ -500,6 +528,10 @@ document.addEventListener("click", e => {
 
 // CALCULAR CICLO REAL (Sin Cambios)
 function calcularCicloReal(planIdx, startCiclo, startYear) {
+    const p = getPensumById(state.currentPensum);
+    // Obtener el número de ciclos por año para el iterador
+    const periodConfig = getPeriodConfiguration(p);
+    const CYCLES_PER_YEAR = periodConfig.cycles;
 
     let ciclo = startCiclo;
     let year = startYear;
@@ -507,7 +539,8 @@ function calcularCicloReal(planIdx, startCiclo, startYear) {
     // planIdx = 0 -> No corre el loop, retorna el ciclo/año de inicio.
     for (let i = 0; i < planIdx; i++) {
         ciclo++;
-        if (ciclo > 3) {
+        // Usa el valor dinámico de ciclos por año
+        if (ciclo > CYCLES_PER_YEAR) {
             ciclo = 1;
             year++;
         }
@@ -515,7 +548,6 @@ function calcularCicloReal(planIdx, startCiclo, startYear) {
 
     return { ciclo, year };
 }
-
 
 // RENDER DEL RESULTADO (Sin Cambios)
 function renderPlannerOutput(plan, materiasDB) {
@@ -617,7 +649,7 @@ document.addEventListener("click", async e => {
     const originalContainerMaxWidth = container.style.maxWidth;
     const originalContainerOverflowX = container.style.overflowX;
     const originalContainerPosition = container.style.position; // <--- NUEVO
-    const originalContainerLeft = container.style.left;         // <--- NUEVO
+    const originalContainerLeft = container.style.left;         // <--- NUEVO
     const originalBodyOverflowX = body.style.overflowX;
     const originalCardWidths = [];
     cards.forEach(card => originalCardWidths.push(card.style.width));
@@ -633,7 +665,7 @@ document.addEventListener("click", async e => {
         pdfButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Generando PDF...';
 
         // b. Ocultar el contenedor de plan MOVIÉNDOLO FUERA DE PANTALLA
-        //    Esto mantiene el layout y permite a html2canvas capturar el contenido.
+        //    Esto mantiene el layout y permite a html2canvas capturar el contenido.
         container.style.display = 'block'; // Asegurar que no esté 'none'
         container.style.position = 'fixed';
         container.style.left = '-9999px'; // Moverlo fuera de la vista
@@ -707,7 +739,7 @@ document.addEventListener("click", async e => {
         container.style.maxWidth = originalContainerMaxWidth;
         container.style.overflowX = originalContainerOverflowX;
         container.style.position = originalContainerPosition; // <-- RESTAURADO
-        container.style.left = originalContainerLeft;         // <-- RESTAURADO
+        container.style.left = originalContainerLeft;         // <-- RESTAURADO
         container.style.display = originalContainerDisplay; // Mostrar contenedor
 
         // b. Restaurar estilos de las cards
@@ -723,109 +755,3 @@ document.addEventListener("click", async e => {
         pdfButton.disabled = false;
     }
 });
-
-
-/* document.addEventListener("click", async e => {
-    if (e.target.id !== "plannerPDF") return;
-
-    const container = document.getElementById("plannerPlanContainer");
-    if (!container) return alert("No hay plan para exportar.");
-
-    // 1. Definir ancho de renderizado y configuración del PDF
-    const PDF_RENDER_WIDTH = 700;
-
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF("p", "mm", "a4");
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const pageHeight = pdf.internal.pageSize.getHeight();
-    const margin = 10;
-    const pdfContentWidth = pageWidth - 2 * margin;
-    let cursorY = margin;
-
-    const cards = container.querySelectorAll(".card");
-    const body = document.body;
-
-    // ==========================================================
-    // 2. APLICAR ESTILOS TEMPORALES PARA CAPTURA (Flicker Fix)
-    // ==========================================================
-
-    // a. Guardar estilos originales
-    const originalContainerWidth = container.style.width;
-    const originalContainerMaxWidth = container.style.maxWidth;
-    const originalContainerOverflowX = container.style.overflowX;
-
-    // <--- NUEVOS ESTILOS PARA EVITAR EL FLICKER
-    const originalContainerPosition = container.style.position;
-    const originalContainerLeft = container.style.left;
-    // ----------------------------------------
-
-    // b. Mitigar el desbordamiento del body (CLAVE para móviles)
-    const originalBodyOverflowX = body.style.overflowX;
-    body.style.overflowX = 'hidden';
-
-    // c. Forzar el ancho de renderizado y MOVERLO OFF-SCREEN
-    container.style.position = 'absolute';
-    container.style.left = '-9999px';
-    container.style.width = `${PDF_RENDER_WIDTH}px`;
-    container.style.maxWidth = `${PDF_RENDER_WIDTH}px`;
-    container.style.overflowX = 'hidden';
-
-    // d. Ajustar las cards si es necesario
-    const originalCardWidths = [];
-    cards.forEach(card => {
-        originalCardWidths.push(card.style.width);
-        card.style.width = `${PDF_RENDER_WIDTH}px`;
-    });
-
-
-    // ==========================================================
-    // 3. RENDERIZAR CADA TARJETA (Mejora de Calidad)
-    // ==========================================================
-    for (let i = 0; i < cards.length; i++) {
-        const card = cards[i];
-
-        const canvas = await html2canvas(card, {
-            scale: 3, // Aumentar la escala a 3 para mejor resolución
-            useCORS: true
-        });
-
-        // Usar PNG (sin pérdida) para mejor calidad
-        const imgData = canvas.toDataURL("image/png");
-
-        const imgHeightPDF = (canvas.height / canvas.width) * pdfContentWidth;
-
-        // Añadir página si no cabe
-        if (cursorY + imgHeightPDF > pageHeight - margin) {
-            pdf.addPage();
-            cursorY = margin;
-        }
-
-        // Usar 'PNG' como tipo de imagen para addImage
-        pdf.addImage(imgData, "PNG", margin, cursorY, pdfContentWidth, imgHeightPDF);
-        cursorY += imgHeightPDF + 5;
-    }
-
-    // ==========================================================
-    // 4. RESTAURAR ESTILOS ORIGINALES
-    // ==========================================================
-
-    // a. Restaurar estilos del contenedor
-    container.style.width = originalContainerWidth;
-    container.style.maxWidth = originalContainerMaxWidth;
-    container.style.overflowX = originalContainerOverflowX;
-
-    // <--- RESTAURAR POSICIÓN
-    container.style.position = originalContainerPosition;
-    container.style.left = originalContainerLeft;
-    // ----------------------
-
-    // b. Restaurar estilos de las cards
-    cards.forEach((card, index) => {
-        card.style.width = originalCardWidths[index];
-    });
-
-    // c. CLAVE: Restaurar el overflow-x del body
-    body.style.overflowX = originalBodyOverflowX;
-
-    pdf.save("Planificación de Materias.pdf");
-}); */

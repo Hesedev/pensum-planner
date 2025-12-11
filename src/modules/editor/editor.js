@@ -3,7 +3,19 @@ import { state, saveState } from "../../core/state.js";
 import { uid } from "../../core/utils.js";
 
 /*****************************************************************
- *                 UTILIDADES INTERNAS
+ * CONSTANTES DE PENSUM
+ *****************************************************************/
+export const ACADEMIC_PERIODS = {
+    SEMESTRAL: 'Semestral',
+    CUATRIMESTRAL: 'Cuatrimestral',
+    TRIMESTRAL: 'Trimestral', // <-- NUEVO: Trismestral
+    INDEFINIDO: 'Indefinido'
+};
+export const DEFAULT_PERIOD = ACADEMIC_PERIODS.INDEFINIDO;
+
+
+/*****************************************************************
+ *                 UTILIDADES INTERNAS
  *****************************************************************/
 
 // Evita nombres duplicados de pensum
@@ -19,7 +31,7 @@ function renumerarCiclos(pensum) {
 }
 
 /*****************************************************************
- *                     CREAR Y OBTENER PENSUM
+ *                     CREAR Y OBTENER PENSUM
  *****************************************************************/
 
 export function createPensum(nombre = "") {
@@ -35,6 +47,7 @@ export function createPensum(nombre = "") {
     const nuevo = {
         id: uid(),
         nombre,
+        periodoAcademico: DEFAULT_PERIOD, // <-- NUEVO: Inicializar la propiedad
         ciclos: [],
         electivas: []
     };
@@ -60,6 +73,21 @@ export function renamePensum(id, nuevoNombre) {
     return true;
 }
 
+// NUEVO: Función para actualizar el tipo de período académico
+export function editPensumPeriod(periodo) {
+    const p = getPensum();
+    if (!p) return false;
+
+    // Usar el valor o el predeterminado si el valor no es válido/reconocido
+    const validPeriod = Object.values(ACADEMIC_PERIODS).includes(periodo)
+        ? periodo
+        : DEFAULT_PERIOD;
+
+    p.periodoAcademico = validPeriod;
+    saveState();
+    return true;
+}
+
 export function deletePensum(id) {
     state.pensums = state.pensums.filter(p => p.id !== id);
 
@@ -71,14 +99,22 @@ export function deletePensum(id) {
 }
 
 export function getPensum() {
-    return state.pensums.find(p => p.id === state.currentPensum) || null;
+    const pensum = state.pensums.find(p => p.id === state.currentPensum) || null;
+
+    // RETROCOMPATIBILIDAD: Asegurar que el campo exista para pensums antiguos
+    if (pensum && !pensum.periodoAcademico) {
+        pensum.periodoAcademico = DEFAULT_PERIOD;
+    }
+
+    return pensum;
 }
 
 /*****************************************************************
- *                          CICLOS
+ *                          CICLOS
  *****************************************************************/
 
 export function addCycle() {
+    // ... sin cambios ...
     const p = getPensum();
     if (!p) return;
 
@@ -94,6 +130,7 @@ export function addCycle() {
 }
 
 export function deleteCycle(cycleId) {
+    // ... sin cambios ...
     const p = getPensum();
     if (!p) return;
 
@@ -104,10 +141,11 @@ export function deleteCycle(cycleId) {
 }
 
 /*****************************************************************
- *                         MATERIAS
+ *                         MATERIAS
  *****************************************************************/
 
 export function addMateria(cycleId) {
+    // ... sin cambios ...
     const p = getPensum();
     if (!p) return;
 
@@ -129,6 +167,7 @@ export function addMateria(cycleId) {
 }
 
 export function deleteMateria(cycleId, materiaId) {
+    // ... sin cambios ...
     const p = getPensum();
     if (!p) return;
 
@@ -141,10 +180,11 @@ export function deleteMateria(cycleId, materiaId) {
 }
 
 /*****************************************************************
- *                       EDITAR MATERIA
+ *                       EDITAR MATERIA
  *****************************************************************/
 
 export function editMateriaField(cycleId, materiaId, field, value) {
+    // ... sin cambios ...
     const p = getPensum();
     if (!p) return;
 
@@ -178,10 +218,11 @@ export function editMateriaField(cycleId, materiaId, field, value) {
 }
 
 /*****************************************************************
- *                         ELECTIVAS
+ *                         ELECTIVAS
  *****************************************************************/
 
 export function addElectiva() {
+    // ... sin cambios ...
     const p = getPensum();
     if (!p) return;
 
@@ -197,6 +238,7 @@ export function addElectiva() {
 }
 
 export function deleteElectiva(id) {
+    // ... sin cambios ...
     const p = getPensum();
     if (!p) return;
 
@@ -205,6 +247,7 @@ export function deleteElectiva(id) {
 }
 
 export function editElectivaField(id, field, value) {
+    // ... sin cambios ...
     const p = getPensum();
     if (!p) return;
 
@@ -221,7 +264,7 @@ export function editElectivaField(id, field, value) {
 }
 
 /*****************************************************************
- *                  IMPORTAR / EXPORTAR JSON
+ *                  IMPORTAR / EXPORTAR JSON
  *****************************************************************/
 
 export function importPensum(jsonData) {
@@ -242,6 +285,9 @@ export function importPensum(jsonData) {
             nombre = `${base} (${i})`;
         }
         obj.nombre = nombre;
+
+        // NUEVO: Asignar período académico con retrocompatibilidad
+        obj.periodoAcademico = obj.periodoAcademico || DEFAULT_PERIOD; // <-- NUEVO
 
         // Regenerar IDs (importación limpia)
         obj.id = uid();
@@ -268,12 +314,14 @@ export function importPensum(jsonData) {
         return true;
 
     } catch (e) {
+        console.error(e);
         alert("Ocurrió un error al leer el JSON.");
         return false;
     }
 }
 
 export function exportPensum() {
+    // ... sin cambios ...
     const p = getPensum();
     if (!p) return;
 

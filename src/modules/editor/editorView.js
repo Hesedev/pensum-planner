@@ -13,7 +13,12 @@ import {
   editMateriaField,
   addElectiva,
   deleteElectiva,
-  editElectivaField
+  editElectivaField,
+  // === NUEVOS IMPORTS ===
+  ACADEMIC_PERIODS,
+  DEFAULT_PERIOD,
+  editPensumPeriod
+  // ======================
 } from "./editor.js";
 
 import { state, saveState } from "../../core/state.js";
@@ -23,8 +28,8 @@ import { uid, render } from "../../core/utils.js";
 let activeTabId = '#tabResumen'; // Valor por defecto
 
 /* ===========================================
-   UTILITY: Re-renderiza la vista actual
-   =========================================== */
+    UTILITY: Re-renderiza la vista actual
+    =========================================== */
 function reinitializeTabs() {
   // 1. Escuchar el evento de Bootstrap para actualizar el ID activo
   const tabList = document.getElementById('editorTabs');
@@ -64,8 +69,8 @@ function refreshEditorView() {
 }
 
 /* ===========================================
-   UTILITY: Renderiza y actualiza SOLO un ciclo
-   =========================================== */
+    UTILITY: Renderiza y actualiza SOLO un ciclo
+    =========================================== */
 function refreshCycleCard(cycleId) {
   const p = getPensum();
   const cycle = p.ciclos.find(c => c.id === cycleId);
@@ -89,8 +94,8 @@ function refreshCycleCard(cycleId) {
 }
 
 /* ===========================================
-   UTILITY: Renderiza y actualiza TODO el contenedor de ciclos
-   =========================================== */
+    UTILITY: Renderiza y actualiza TODO el contenedor de ciclos
+    =========================================== */
 function refreshCyclesContainer() {
   const p = getPensum();
   if (!p) return;
@@ -103,8 +108,8 @@ function refreshCyclesContainer() {
 }
 
 /* ===========================================
-   UTILITY: Renderiza y actualiza TODO el contenedor de electivas
-   =========================================== */
+    UTILITY: Renderiza y actualiza TODO el contenedor de electivas
+    =========================================== */
 function refreshElectivasContainer() {
   const p = getPensum();
   if (!p) return;
@@ -117,8 +122,8 @@ function refreshElectivasContainer() {
 }
 
 /* ===========================================
-   UTILITY: Actualiza solo el bloque de resumen
-   =========================================== */
+    UTILITY: Actualiza solo el bloque de resumen
+    =========================================== */
 function refreshResumen() {
   const p = getPensum();
   if (!p) return;
@@ -127,26 +132,26 @@ function refreshResumen() {
   const totalMaterias = p.ciclos.reduce((s, c) => s + (c.materias?.length || 0), 0);
   const totalCreditos = p.ciclos.reduce((s, c) => s + (c.materias?.reduce((ss, m) => ss + (m.creditos || 0), 0) || 0), 0);
   const totalElectivas = p.electivas?.length || 0;
+  // NUEVO: Tipo de período
+  const periodo = p.periodoAcademico || DEFAULT_PERIOD;
+
 
   const resumenDiv = document.getElementById('tabResumen');
   if (resumenDiv) {
     // Reemplaza el contenido interno de la pestaña de resumen
-    resumenDiv.innerHTML = renderResumen(totalCiclos, totalMaterias, totalCreditos, totalElectivas);
+    resumenDiv.innerHTML = renderResumen(totalCiclos, totalMaterias, totalCreditos, totalElectivas, periodo);
   }
 }
 
 // -------------------------------------------------------------
-// Nota: Puedes crear una función de alto nivel que llame a todas:
 function smartRefresh() {
   refreshResumen();
-  // No necesitamos llamar a refreshCyclesContainer/refreshElectivasContainer aquí,
-  // ya que las funciones de evento (add/delete) lo harán de forma específica.
 }
 // -------------------------------------------------------------
 
 /* ===========================================
-   Helpers de escape
-   =========================================== */
+    Helpers de escape
+    =========================================== */
 function esc(str) {
   return (str ?? "").toString()
     .replaceAll("&", "&amp;")
@@ -155,8 +160,8 @@ function esc(str) {
 }
 
 /* ===========================================
-   MAIN VIEW
-   =========================================== */
+    MAIN VIEW
+    =========================================== */
 export function editorView() {
   const p = getPensum();
 
@@ -180,8 +185,12 @@ export function editorView() {
           <option disabled ${!p ? "selected" : ""}>-- Seleccionar pensum --</option>
           ${pensumsOptions}
         </select>
-        <button id="btnManagePensums" class="btn btn-outline-secondary btn-sm">Gestionar</button>
-        <button id="btnExportPensum" class="btn btn-success btn-sm">Exportar JSON</button>
+        <button id="btnManagePensums" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modalManagePensums">
+          <i class="bi bi-gear"></i> Gestionar
+        </button>
+        <button id="btnExportPensum" class="btn btn-success btn-sm">
+          <i class="bi bi-box-arrow-down"></i> Exportar
+        </button>
       </div>
     </div>
 
@@ -192,8 +201,8 @@ export function editorView() {
 }
 
 /* ===========================================
-   EMPTY VIEW
-   =========================================== */
+    EMPTY VIEW
+    =========================================== */
 function renderEmptyState() {
   return `
     <div class="card">
@@ -202,7 +211,9 @@ function renderEmptyState() {
         <p>Crea uno nuevo o importa un JSON.</p>
 
         <div class="d-flex gap-2 flex-column flex-sm-row">
-          <button class="btn btn-primary" id="btnNuevoPensum">Crear nuevo pensum</button>
+          <button class="btn btn-primary" id="btnNuevoPensum">
+            <i class="bi bi-plus-lg"></i> Crear nuevo pensum
+          </button>
 
           <div style="min-width:260px;">
             <label class="form-label mb-1">Importar pensum (.json)</label>
@@ -215,23 +226,40 @@ function renderEmptyState() {
 }
 
 /* ===========================================
-   EDITOR MAIN: TABS
-   =========================================== */
+    EDITOR MAIN: TABS
+    =========================================== */
 function renderEditorMain(p) {
   const totalCiclos = p.ciclos.length;
   const totalMaterias = p.ciclos.reduce((s, c) => s + (c.materias?.length || 0), 0);
   const totalCreditos = p.ciclos.reduce((s, c) => s + (c.materias?.reduce((ss, m) => ss + (m.creditos || 0), 0) || 0), 0);
   const totalElectivas = p.electivas?.length || 0;
 
+  // NUEVO: Generar opciones del select para Periodo Académico
+  const periodOptions = Object.values(ACADEMIC_PERIODS).map(period =>
+    `<option value="${period}" ${p.periodoAcademico === period ? "selected" : ""}>${period}</option>`
+  ).join("");
+
+
   return `
     <div class="mb-3">
       <label class="form-label">Nombre del pensum</label>
       <input id="nombrePensum" class="form-control mb-2" value="${esc(p.nombre)}" placeholder="Nombre del pensum">
 
+      <label class="form-label mt-2">Período Académico</label>
+      <select id="pensumPeriodSelector" class="form-select mb-3">
+          ${periodOptions}
+      </select>
+      
       <div class="d-flex gap-2">
-        <button id="btnAddCycle" class="btn btn-warning btn-sm">+ Agregar ciclo</button>
-        <button id="btnAddElectiva" class="btn btn-outline-secondary btn-sm">+ Agregar electiva</button>
-        <button id="btnDuplicatePensum" class="btn btn-outline-info btn-sm">Duplicar pensum</button>
+        <button id="btnAddCycle" class="btn btn-warning btn-sm">
+          <i class="bi bi-calendar-plus"></i> Agregar ciclo
+        </button>
+        <button id="btnAddElectiva" class="btn btn-outline-secondary btn-sm">
+          <i class="bi bi-journal-plus"></i> Agregar electiva
+        </button>
+        <button id="btnDuplicatePensum" class="btn btn-outline-info btn-sm">
+          <i class="bi bi-files"></i> Duplicar pensum
+        </button>
       </div>
     </div>
     <hr>
@@ -252,26 +280,22 @@ function renderEditorMain(p) {
 
     <div class="tab-content">
 
-      <!-- RESUMEN -->
       <div class="tab-pane fade show active" id="tabResumen">
-        ${renderResumen(totalCiclos, totalMaterias, totalCreditos, totalElectivas)}
+        ${renderResumen(totalCiclos, totalMaterias, totalCreditos, totalElectivas, p.periodoAcademico)}
       </div>
 
-      <!-- CICLOS -->
       <div class="tab-pane fade" id="tabCiclos">
         <div id="cyclesContainerInner">
           ${p.ciclos.map((c, i) => renderCycleCard(c, i)).join("")}
         </div>
       </div>
 
-      <!-- ELECTIVAS -->
       <div class="tab-pane fade" id="tabElectivas">
         <div id="electivasContainerInner">
           ${p.electivas.map(e => renderMateriaUnified(null, e, true)).join("")}
         </div>
       </div>
 
-      <!-- IMPORT/EXPORT -->
       <div class="tab-pane fade" id="tabImport">
         ${renderImportExport()}
       </div>
@@ -283,22 +307,42 @@ function renderEditorMain(p) {
 }
 
 /* ===========================================
-   RESUMEN
-   =========================================== */
-function renderResumen(ciclos, materias, creditos, electivas) {
+    RESUMEN
+    =========================================== */
+function renderResumen(ciclos, materias, creditos, electivas, periodo) {
   return `
     <div class="row g-3">
-      <div class="col-6 col-md-3"><div class="card p-2"><div class="text-muted small">Ciclos</div><div class="fs-4">${ciclos}</div></div></div>
-      <div class="col-6 col-md-3"><div class="card p-2"><div class="text-muted small">Materias</div><div class="fs-4">${materias}</div></div></div>
-      <div class="col-6 col-md-3"><div class="card p-2"><div class="text-muted small">Créditos</div><div class="fs-4">${creditos}</div></div></div>
-      <div class="col-6 col-md-3"><div class="card p-2"><div class="text-muted small">Electivas</div><div class="fs-4">${electivas}</div></div></div>
+      <div class="col-6 col-md-3">
+        <div class="card p-2">
+          <div class="text-muted small">Período</div>
+          <div class="fs-4">${periodo || DEFAULT_PERIOD}</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="card p-2">
+          <div class="text-muted small">Ciclos</div>
+          <div class="fs-4">${ciclos}</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="card p-2">
+          <div class="text-muted small">Materias</div>
+          <div class="fs-4">${materias}</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="card p-2">
+          <div class="text-muted small">Créditos</div>
+          <div class="fs-4">${creditos}</div>
+        </div>
+      </div>
     </div>
   `;
 }
 
 /* ===========================================
-   CYCLE CARD
-   =========================================== */
+    CYCLE CARD
+    =========================================== */
 function renderCycleCard(cycle, index) {
   const collapseId = `cycle_${cycle.id}`;
 
@@ -309,10 +353,10 @@ function renderCycleCard(cycle, index) {
 
         <div class="d-flex gap-2">
           <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#${collapseId}">
-            Mostrar / Ocultar
+            <i class="bi bi-arrows-expand"></i>
           </button>
           <button class="btn btn-sm btn-outline-danger" data-delete-cycle="${cycle.id}">
-            Eliminar ciclo
+            <i class="bi bi-trash"></i>
           </button>
         </div>
       </div>
@@ -322,7 +366,7 @@ function renderCycleCard(cycle, index) {
           ${cycle.materias.map(m => renderMateriaUnified(cycle.id, m, false)).join("")}
 
           <button class="btn btn-sm btn-outline-primary mt-2" data-add-materia="${cycle.id}">
-            + Agregar materia
+            <i class="bi bi-plus-lg"></i> Agregar materia
           </button>
         </div>
       </div>
@@ -332,8 +376,8 @@ function renderCycleCard(cycle, index) {
 
 
 /* ===========================================
-   UNIFIED MATERIA CARD (para ciclos y electivas)
-   =========================================== */
+    UNIFIED MATERIA CARD (para ciclos y electivas)
+    =========================================== */
 function renderMateriaUnified(cycleId, m, isElectiva) {
   const prereq = Array.isArray(m.prerequisitos) ? m.prerequisitos.join(", ") : "";
   const coreq = Array.isArray(m.corequisitos) ? m.corequisitos.join(", ") : "";
@@ -350,8 +394,8 @@ function renderMateriaUnified(cycleId, m, isElectiva) {
           <strong>${esc(m.codigo) || "(sin código)"}</strong>
           <div class="text-muted small">${esc(m.nombre) || "(sin nombre)"}</div>
         </div>
-        <button class="btn btn-sm btn-outline-danger" ${isElectiva ? `data-delete-electiva="${m.id}"` : `data-delete-materia="${cycleId}:${m.id}"`}>
-          Eliminar
+        <button class="btn btn-sm text-danger" ${isElectiva ? `data-delete-electiva="${m.id}"` : `data-delete-materia="${cycleId}:${m.id}"`}>
+          <i class="bi bi-trash-fill"></i>
         </button>
       </div>
 
@@ -377,8 +421,6 @@ function renderMateriaUnified(cycleId, m, isElectiva) {
             ${isElectiva ? `data-edit-electiva="${m.id}:creditos"` : `data-edit="${cycleId}:${m.id}:creditos"`}
             value="${m.creditos || 0}">
         </div>
-
-        <!-- SIN campo "tipo" -->
 
         <div class="col-12">
           <label class="small">Pre-requisitos</label>
@@ -408,8 +450,8 @@ function renderMateriaUnified(cycleId, m, isElectiva) {
 
 
 /* ===========================================
-   IMPORT/EXPORT TAB
-   =========================================== */
+    IMPORT/EXPORT TAB
+    =========================================== */
 function renderImportExport() {
   return `
     <div class="mb-3">
@@ -418,53 +460,64 @@ function renderImportExport() {
     </div>
 
     <div class="mb-3 d-flex gap-2">
-      <button id="btnExportPensum" class="btn btn-success btn-sm">Exportar JSON del pensum</button>
-      <button id="btnExportAll" class="btn btn-outline-secondary btn-sm">Exportar todos los pensums</button>
+      <button id="btnExportPensum" class="btn btn-success btn-sm">
+        <i class="bi bi-box-arrow-down"></i> Exportar JSON del pensum
+      </button>
+      <button id="btnExportAll" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-download"></i> Exportar todos los pensums
+      </button>
     </div>
 
     <small class="text-muted">La importación normaliza IDs y maneja nombres duplicados.</small>
   `;
 }
 
+// Función utilitaria para obtener la instancia del modal de gestión
+function getManagePensumsModalInstance() {
+  const modalElement = document.getElementById("modalManagePensums");
+  return bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
+}
+
+// Función para ocultar el modal de gestión de forma segura
+function hideManagePensumsModal() {
+  const modal = getManagePensumsModalInstance();
+  modal?.hide();
+}
+
 /* ===========================================
-   MODAL: Manage Pensums
-   =========================================== */
+    MODAL: Manage Pensums
+    =========================================== */
 function renderManagePensumsModal() {
   const list = state.pensums.map(p => `
     <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap gap-2">
       <div>
         <strong>${esc(p.nombre)}</strong>
-        <div class="text-muted small">Ciclos: ${p.ciclos.length}, Electivas: ${p.electivas?.length || 0}</div>
+        <div class="text-muted small">Ciclos: ${p.ciclos.length}, Créditos: ${p.ciclos.reduce((s, c) => s + (c.materias?.reduce((ss, m) => ss + (m.creditos || 0), 0) || 0), 0)}, Periodo: ${p.periodoAcademico || DEFAULT_PERIOD}</div>
       </div>
       <div class="d-flex gap-2">
-        <button class="btn btn-sm btn-outline-primary" data-select-pensum="${p.id}">Seleccionar</button>
-        <button class="btn btn-sm btn-outline-secondary" data-rename-pensum="${p.id}">Renombrar</button>
-        <button class="btn btn-sm btn-danger" data-delete-pensum="${p.id}">Eliminar</button>
+        <button class="btn btn-sm btn-outline-primary" data-select-pensum="${p.id}"><i class="bi bi-check-lg"></i> Seleccionar</button>
+        <button class="btn btn-sm btn-outline-secondary" data-rename-pensum="${p.id}"><i class="bi bi-pencil"></i> Renombrar</button>
+        <button class="btn btn-sm btn-danger" data-delete-pensum="${p.id}"><i class="bi bi-trash"></i> Eliminar</button>
       </div>
     </li>`).join("");
 
   return `
     <div class="modal fade" id="modalManagePensums" tabindex="-1">
-      <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
         <div class="modal-content">
 
           <div class="modal-header">
             <h5 class="modal-title">Gestionar Pensums</h5>
-            <button class="btn-close" data-bs-dismiss="modal"></button>
+            <button id="btnModalCloseHeader" class="btn-close" aria-label="Close"></button>
           </div>
 
           <div class="modal-body">
             <div class="d-flex gap-2 mb-3">
               <input id="newPensumNameModal" class="form-control" placeholder="Nombre nuevo pensum">
-              <button id="btnCreatePensumModal" class="btn btn-success">Crear</button>
+              <button id="btnCreatePensumModal" class="btn btn-success"><i class="bi bi-plus-lg"></i></button>
             </div>
             <ul class="list-group">${list}</ul>
           </div>
-
-          <div class="modal-footer">
-            <button class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-          </div>
-
         </div>
       </div>
     </div>
@@ -472,24 +525,33 @@ function renderManagePensumsModal() {
 }
 
 /* ===========================================
-   EVENTOS CLICK
-   =========================================== */
+    EVENTOS CLICK
+    =========================================== */
 document.addEventListener("click", (ev) => {
-  const t = ev.target;
+  const t = ev.target.closest("button"); // Usamos closest("button") para asegurar que capturamos el botón aunque se haga clic en el icono
+  if (!t) return;
 
   // Crear pensum
-  if (t.id === "btnNuevoPensum" || t.id === "btnNewPensumSmall") {
+  if (t.id === "btnNuevoPensum") {
     const name = prompt("Nombre del pensum:");
     if (name) {
       createPensum(name);
-      location.reload();
+      refreshEditorView(); // Usar refreshEditorView en lugar de location.reload()
+      // location.reload();
     }
+    return;
   }
 
-  // Gestión modal
-  if (t.id === "btnManagePensums" || t.id === "btnManagePensumModal") {
-    const modal = new bootstrap.Modal(document.getElementById("modalManagePensums"));
-    modal.show();
+  // Manejador para el botón "Gestionar" (Abrir)
+  if (t.id === "btnManagePensums") {
+    // Usar la función para crear/obtener y mostrar
+    getManagePensumsModalInstance().show();
+    return;
+  }
+
+  // MANEJADOR PARA CERRAR EL MODAL
+  if (t.id === "btnModalCloseHeader" || t.id === "btnModalCloseFooter") {
+    hideManagePensumsModal();
     return;
   }
 
@@ -497,20 +559,25 @@ document.addEventListener("click", (ev) => {
     const name = document.getElementById("newPensumNameModal").value.trim();
     if (!name) return alert("Nombre inválido");
     createPensum(name);
-    location.reload();
+    refreshEditorView();
+    hideManagePensumsModal(); // Cierre manual después del refresh
+    return;
   }
 
   if (t.dataset.selectPensum) {
     state.currentPensum = t.dataset.selectPensum;
     saveState();
-    location.reload();
+    refreshEditorView();
+    hideManagePensumsModal(); // Cierre manual después del refresh
+    return;
   }
 
   if (t.dataset.renamePensum) {
     const ps = state.pensums.find(p => p.id === t.dataset.renamePensum);
     const nuevo = prompt("Nuevo nombre", ps.nombre);
     if (nuevo && renamePensum(ps.id, nuevo)) {
-      location.reload();
+      refreshEditorView();
+      hideManagePensumsModal(); // Cierre manual después del refresh
     }
     return;
   }
@@ -518,13 +585,14 @@ document.addEventListener("click", (ev) => {
   if (t.dataset.deletePensum) {
     if (confirm("¿Eliminar pensum?")) {
       deletePensum(t.dataset.deletePensum);
-      location.reload();
+      refreshEditorView();
+      hideManagePensumsModal(); // Cierre manual después del refresh
     }
     return;
   }
 
   // Export
-  if (t.id === "btnExportPensum") {
+  if (t.id === "btnExportPensum" || t.id === "btnExportPensumModal") {
     exportPensum();
     return;
   }
@@ -541,14 +609,8 @@ document.addEventListener("click", (ev) => {
   // Add cycle
   if (t.id === "btnAddCycle") {
     addCycle();
-
-    // 1. Re-renderiza todos los ciclos (necesario porque los índices cambian)
     refreshCyclesContainer();
-
-    // 2. Actualiza el resumen
     refreshResumen();
-
-    // 3. Scroll al nuevo ciclo (el último en el contenedor)
     activeTabId = '#tabCiclos';
     reinitializeTabs();
     setTimeout(() => {
@@ -570,21 +632,13 @@ document.addEventListener("click", (ev) => {
   // Add materia
   if (t.dataset.addMateria) {
     const cycleId = t.dataset.addMateria;
-
     addMateria(cycleId);
-
-    // LLAMADA CLAVE: Solo actualiza la tarjeta del ciclo
     refreshCycleCard(cycleId);
-
-    // ACTUALIZAR RESUMEN (Materias y Créditos)
     refreshResumen();
-
-    // Scroll
     const cycleContainer = document.querySelector(`[data-cycle="${cycleId}"]`);
     if (cycleContainer) {
       cycleContainer.scrollIntoView({ behavior: 'smooth', block: 'end' });
     }
-
     return;
   }
 
@@ -592,21 +646,12 @@ document.addEventListener("click", (ev) => {
   if (t.dataset.deleteCycle) {
     if (confirm("¿Eliminar ciclo completo?")) {
       const cycleId = t.dataset.deleteCycle;
-
-      // 1. GUARDAR POSICIÓN y el elemento que le sigue
       const cycleCard = document.querySelector(`[data-cycle="${cycleId}"]`);
       const nextCycleId = cycleCard.nextElementSibling?.dataset.cycle;
       const scrollPosition = cycleCard ? cycleCard.offsetTop : 0;
-
       deleteCycle(cycleId);
-
-      // 2. Re-renderiza todos los ciclos (necesario para reindexar)
       refreshCyclesContainer();
-
-      // 3. Actualiza el resumen
       refreshResumen();
-
-      // 4. Restaurar Scroll
       activeTabId = '#tabCiclos';
       reinitializeTabs();
       setTimeout(() => {
@@ -614,7 +659,6 @@ document.addEventListener("click", (ev) => {
         if (nextCycleId) {
           targetElement = document.querySelector(`[data-cycle="${nextCycleId}"]`);
         }
-
         if (targetElement) {
           targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
         } else {
@@ -629,24 +673,14 @@ document.addEventListener("click", (ev) => {
   if (t.dataset.deleteMateria) {
     const [c, m] = t.dataset.deleteMateria.split(":");
     if (confirm("¿Eliminar materia?")) {
-
-      // 1. GUARDAR POSICIÓN
       const materiaCard = document.querySelector(`[data-materia="${c}:${m}"]`);
       const scrollPosition = materiaCard ? materiaCard.offsetTop : 0;
-
       deleteMateria(c, m);
-
-      // 2. LLAMADA CLAVE: Solo actualiza la tarjeta del ciclo afectado
       refreshCycleCard(c);
-
-      // 3. ACTUALIZAR RESUMEN (Materias y Créditos)
       refreshResumen();
-
-      // 4. Restaurar Scroll
       setTimeout(() => {
         document.getElementById('cyclesContainerInner').scrollTop = scrollPosition - 50;
       }, 50);
-
     }
     return;
   }
@@ -654,24 +688,16 @@ document.addEventListener("click", (ev) => {
   // Add electiva
   if (t.id === "btnAddElectiva") {
     addElectiva();
-
-    // 1. Re-renderiza solo el contenedor de electivas
     refreshElectivasContainer();
-
-    // 2. Actualiza el resumen
     refreshResumen();
-
-    // 3. Forzar el tab de electivas y Scroll
     activeTabId = '#tabElectivas';
     reinitializeTabs();
-
     setTimeout(() => {
       const electivasContainer = document.getElementById('electivasContainerInner');
       if (electivasContainer) {
         electivasContainer.lastElementChild?.scrollIntoView({ behavior: 'smooth', block: 'end' });
       }
     }, 50);
-
     return;
   }
 
@@ -679,20 +705,11 @@ document.addEventListener("click", (ev) => {
   if (t.dataset.deleteElectiva) {
     if (confirm("¿Eliminar electiva?")) {
       const electivaId = t.dataset.deleteElectiva;
-
-      // 1. GUARDAR POSICIÓN
       const electivaCard = document.querySelector(`[data-materia="electiva:${electivaId}"]`);
       const scrollPosition = electivaCard ? electivaCard.offsetTop : 0;
-
       deleteElectiva(electivaId);
-
-      // 2. Re-renderiza solo el contenedor de electivas
       refreshElectivasContainer();
-
-      // 3. Actualiza el resumen
       refreshResumen();
-
-      // 4. Restaurar Scroll
       activeTabId = '#tabElectivas';
       reinitializeTabs();
       setTimeout(() => {
@@ -704,14 +721,12 @@ document.addEventListener("click", (ev) => {
 });
 
 /* ===========================================
-   INPUT EVENTS (Ajustes de Reactividad)
-   =========================================== */
+    INPUT EVENTS (Ajustes de Reactividad)
+    =========================================== */
 document.addEventListener("input", (ev) => {
   const t = ev.target;
   const p = getPensum();
   if (!p) return;
-
-  // ... (nombrePensum no necesita refresh, solo se actualiza el valor en la pantalla)
 
   // Materias (se modifican los créditos, así que hay que actualizar el resumen)
   if (t.dataset.edit) {
@@ -739,29 +754,66 @@ document.addEventListener("input", (ev) => {
 });
 
 /* ===========================================
-   CHANGE EVENTS
-   =========================================== */
+    CHANGE EVENTS
+    =========================================== */
 document.addEventListener("change", (ev) => {
   const t = ev.target;
+  const p = getPensum();
 
+  // === 1. CAMBIO DE PENSUM SELECCIONADO ===
   if (t.id === "pensumSelector") {
     state.currentPensum = t.value;
     saveState();
-    location.reload();
+    refreshEditorView(); // Usar refreshEditorView en lugar de location.reload()
+    return;
   }
 
+  // === 2. RENOMBRAR PENSUM DESDE EL INPUT PRINCIPAL ===
+  if (t.id === "nombrePensum") {
+    const nuevoNombre = t.value.trim();
+
+    if (!p) return;
+
+    // Si el nombre es igual al guardado o vacío, no hacemos nada
+    if (!nuevoNombre || nuevoNombre === p.nombre) {
+      t.value = p.nombre; // Asegura que el valor del input refleje el guardado
+      return;
+    }
+
+    if (renamePensum(p.id, nuevoNombre)) {
+      // El renamePensum ya guardó el estado. Actualizamos la vista.
+      refreshEditorView();
+    } else {
+      alert("El nombre ya existe o es inválido. Revirtiendo al nombre anterior.");
+      // Revertir el valor del input al nombre guardado
+      t.value = p.nombre;
+    }
+    return;
+  }
+
+  // === 3. CAMBIO DE PERÍODO ACADÉMICO ===
+  if (t.id === "pensumPeriodSelector") {
+    editPensumPeriod(t.value);
+    // El cambio solo afecta el resumen, por lo que solo refrescamos eso
+    refreshResumen();
+    return;
+  }
+
+  // === 4. IMPORTAR ARCHIVO ===
   if (t.id === "fileImport") {
     const file = t.files[0];
     if (!file) return;
     file.text().then(text => {
-      if (importPensum(text)) location.reload();
+      if (importPensum(text)) refreshEditorView();
+      // location.reload();
     });
+    return;
   }
 });
 
 /* ===========================================
-   DUPLICATE FUNCTION
-   =========================================== */
+    DUPLICATE FUNCTION
+    =========================================== */
 function duplicateCurrentPensum() {
   const p = getPensum();
   if (!p) return;
@@ -769,6 +821,8 @@ function duplicateCurrentPensum() {
   const copy = JSON.parse(JSON.stringify(p));
   copy.id = uid();
   copy.nombre = `${p.nombre} (copia)`;
+
+  // No necesitamos tocar periodoAcademico, ya que se copia
 
   copy.ciclos.forEach((c, i) => {
     c.id = uid();
@@ -780,5 +834,6 @@ function duplicateCurrentPensum() {
   state.pensums.push(copy);
   state.currentPensum = copy.id;
   saveState();
-  location.reload();
+  refreshEditorView(); // Usar refreshEditorView en lugar de location.reload()
+  // location.reload();
 }
