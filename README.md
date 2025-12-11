@@ -22,11 +22,14 @@ Pensum Planner ofrece las herramientas clave para la organización académica:
 
 ### Enfoque
 
-Este proyecto fue desarrollado y está **especialmente optimizado** para la estructura académica **cuatrimestral** de la **Universidad Tecnológica de Santiago (UTESA)**.
+Este proyecto fue desarrollado y está **especialmente optimizado** para el uso en la **Universidad Tecnológica de Santiago (UTESA)**, sin embargo, la herramienta es flexible y se puede adaptar a otras instituciones.
 
 ### Compatibilidad
 
-El sistema puede funcionar con cualquier plan de estudios (pensum) que siga un formato cuatrimestral de ciclos y que pueda ser modelado en la estructura JSON interna del proyecto.
+El planificador puede generar rutas académicas para pensums que utilicen cualquier tipo de ciclo de estudio (semestral, trimestral o cuatrimestral), siempre y cuando la estructura del plan de estudios se ajuste al formato de importación de la aplicación.
+
+* **Periodo Cuatrimestral:** Se usa por defecto si el pensum no especifica el tipo de ciclo.
+* **Otros Periodos:** Si el pensum importado especifica explícitamente un ciclo (semestral o trimestral), el planificador ajustará automáticamente los cálculos a esa duración.
 
 ---
 
@@ -36,8 +39,8 @@ Con el objetivo de ser una herramienta impulsada por la comunidad, este reposito
 
 Si tu pensum aún no está disponible, puedes:
 
-1.  Usar la herramienta de edición para crearlo e importarlo tú mismo.
-2.  **¡Contribuir!** Envía un Pull Request con el archivo JSON de tu pensum a la carpeta `/data/pensums` para ayudar a otros estudiantes.
+1.  Usar la herramienta de edición para crearlo e importarlo tú mismo.
+2.  **¡Contribuir!** Envía un Pull Request con el archivo JSON de tu pensum a la carpeta `/data/pensums` para ayudar a otros estudiantes.
 
 ---
 
@@ -55,12 +58,39 @@ Puedes usar la herramienta sin instalar nada, directamente en tu navegador, grac
 
 Si deseas modificar el código o desarrollar nuevas funcionalidades:
 
-1.  **Clona el repositorio:**
-    ```bash
-    git clone [[https://github.com/tu-usuario/pensum-planner.git](https://github.com/tu-usuario/pensum-planner.git)]
-    ```
-2.  **Ejecución:** Simplemente abre el archivo `index.html` en tu navegador.
-    > **Nota:** Para que las funciones de importar y exportar archivos funcionen correctamente, se recomienda usar un servidor local simple (ej. Live Server).
+1.  **Clona el repositorio:**
+    ```bash
+    git clone [[https://github.com/tu-usuario/pensum-planner.git](https://github.com/tu-usuario/pensum-planner.git)]
+    ```
+2.  **Ejecución:** Simplemente abre el archivo `index.html` en tu navegador.
+    > **Nota:** Para que las funciones de importar y exportar archivos funcionen correctamente, se recomienda usar un servidor local simple (ej. Live Server).
+
+---
+
+## 📝 Guía de Uso Rápido
+
+Sigue estos pasos sencillos para generar tu plan de estudios optimizado:
+
+### Paso 1: Seleccionar el Pensum
+En la sección "Configuración del plan", selecciona el pensum de la lista desplegable. Si tu pensum aún no está cargado, puedes usar el **Editor de Pensums** para importarlo o crearlo manualmente.
+
+### Paso 2: Definir Restricciones y Periodo de Inicio
+Antes de ejecutar el plan, ajusta los límites en la parte superior:
+* Máx. materias que quieres tomar por ciclo.
+* Máx. créditos por ciclo.
+* El Ciclo y Año de inicio de tu planificación.
+
+### Paso 3: Configurar las Materias Aprobadas
+Una vez seleccionado el pensum, se cargarán todos los ciclos. Debes:
+1. Marcar todas las materias **obligatorias** que ya has aprobado.
+2. Si tu pensum tiene electivas, gestiona las **electivas aprobadas** y las **electivas que deseas incluir** en el plan. El contador te mostrará el total de créditos de electivas seleccionadas.
+
+### Paso 4: Generar y Visualizar el Plan
+Haz clic en el botón **"Generar Plan"**. El sistema ejecutará el algoritmo y te mostrará el resultado:
+* El plan se desglosa ciclo por ciclo, con la fecha de inicio estimada para cada uno.
+* Cada materia listada en el plan cumple con todos sus prerrequisitos y correquisitos definidos.
+
+Si deseas guardar el resultado, haz clic en **"Descargar PDF"** para obtener una copia de alta calidad.
 
 ---
 
@@ -68,8 +98,8 @@ Si deseas modificar el código o desarrollar nuevas funcionalidades:
 
 Este es un proyecto *open source*. Damos la bienvenida a la comunidad para:
 
-1.  Reportar errores o sugerir mejoras en la sección de [Issues](https://github.com/tu-usuario/pensum-planner/issues).
-2.  Contribuir código para ampliar la funcionalidad, mejorar el algoritmo o subir un nuevo pensum compatible a la Biblioteca.
+1.  Reportar errores o sugerir mejoras en la sección de [Issues](https://github.com/Hesedev/pensum-planner/issues).
+2.  Contribuir código para ampliar la funcionalidad, mejorar el algoritmo o subir un nuevo pensum compatible a la Biblioteca.
 
 ---
 
