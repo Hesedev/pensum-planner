@@ -19,7 +19,7 @@ import {
   DEFAULT_PERIOD,
   editPensumPeriod
   // ======================
-} from "./editor.js";
+} from "./pensumEditor.js";
 
 import { state, saveState } from "../../core/state.js";
 import { uid, render } from "../../core/utils.js";
@@ -59,7 +59,7 @@ function reinitializeTabs() {
 
 function refreshEditorView() {
   // 1. Genera el nuevo HTML
-  const newHtml = editorView();
+  const newHtml = pensumEditorView();
 
   // 2. Renderiza el HTML usando tu método de utilidad
   render(newHtml);
@@ -162,7 +162,7 @@ function esc(str) {
 /* ===========================================
     MAIN VIEW
     =========================================== */
-export function editorView() {
+export function pensumEditorView() {
   const p = getPensum();
 
   const pensumsOptions = state.pensums
@@ -508,7 +508,7 @@ function renderManagePensumsModal() {
 
           <div class="modal-header">
             <h5 class="modal-title">Gestionar Pensums</h5>
-            <button id="btnModalCloseHeader" class="btn-close" aria-label="Close"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
 
           <div class="modal-body">
@@ -549,26 +549,24 @@ document.addEventListener("click", (ev) => {
     return;
   }
 
-  // MANEJADOR PARA CERRAR EL MODAL
-  if (t.id === "btnModalCloseHeader" || t.id === "btnModalCloseFooter") {
-    hideManagePensumsModal();
-    return;
-  }
+  // NOTE: El handler manual para cerrar el modal por ID ("btnModalCloseHeader") fue removido.
+  // El cierre es manejado automáticamente por Bootstrap gracias a data-bs-dismiss="modal" en el HTML.
+
 
   if (t.id === "btnCreatePensumModal") {
     const name = document.getElementById("newPensumNameModal").value.trim();
     if (!name) return alert("Nombre inválido");
     createPensum(name);
+    hideManagePensumsModal(); // Cierre manual antes del refresh
     refreshEditorView();
-    hideManagePensumsModal(); // Cierre manual después del refresh
     return;
   }
 
   if (t.dataset.selectPensum) {
     state.currentPensum = t.dataset.selectPensum;
     saveState();
+    hideManagePensumsModal(); // Cierre manual antes del refresh
     refreshEditorView();
-    hideManagePensumsModal(); // Cierre manual después del refresh
     return;
   }
 
@@ -576,8 +574,8 @@ document.addEventListener("click", (ev) => {
     const ps = state.pensums.find(p => p.id === t.dataset.renamePensum);
     const nuevo = prompt("Nuevo nombre", ps.nombre);
     if (nuevo && renamePensum(ps.id, nuevo)) {
+      hideManagePensumsModal(); // Cierre manual antes del refresh
       refreshEditorView();
-      hideManagePensumsModal(); // Cierre manual después del refresh
     }
     return;
   }
@@ -585,8 +583,8 @@ document.addEventListener("click", (ev) => {
   if (t.dataset.deletePensum) {
     if (confirm("¿Eliminar pensum?")) {
       deletePensum(t.dataset.deletePensum);
+      hideManagePensumsModal(); // Cierre manual antes del refresh
       refreshEditorView();
-      hideManagePensumsModal(); // Cierre manual después del refresh
     }
     return;
   }
